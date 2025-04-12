@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = git@github.com:Naucto/Backend.git
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:Naucto/Frontend.git
