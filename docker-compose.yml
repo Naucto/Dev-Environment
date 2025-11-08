@@ -15,7 +15,7 @@ services:
       - POSTGRES_HOST
       - POSTGRES_PORT
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     networks:
       - back-tier
 
@@ -56,8 +56,7 @@ services:
     build:
       context: frontend
       args:
-        # Le frontend parle directement au backend via le réseau Docker
-        BACKEND_URL: http://backend:${BACKEND_PORT}
+        BACKEND_URL: http://localhost:${BACKEND_PORT}
     networks:
       - front-tier
     depends_on:
