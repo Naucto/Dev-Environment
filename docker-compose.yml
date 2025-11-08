@@ -1,0 +1,66 @@
+networks:
+  back-tier:
+  front-tier:
+
+volumes:
+  db-data:
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
+
+  backend:
+    image: naucto-dev-backend
+    build:
+      context: dev_environment/backend
+      args:
+        BACKEND_PORT: ${BACKEND_PORT}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_HOST: ${POSTGRES_HOST}
+        POSTGRES_PORT: ${POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - BACKEND_PORT
+      - JWT_SECRET
+      - JWT_EXPIRES_IN
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
+      - S3_BUCKET_NAME
+    networks:
+      - back-tier
+      - front-tier
+    depends_on:
+      - db
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+
+  frontend:
+    image: naucto-dev-frontend
+    build:
+      context: dev_environment/frontend
+      args:
+        # Le frontend parle directement au backend via le réseau Docker
+        BACKEND_URL: http://backend:${BACKEND_PORT}
+    networks:
+      - front-tier
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT}:80"
