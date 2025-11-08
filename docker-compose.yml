@@ -22,7 +22,7 @@ services:
   backend:
     image: naucto-dev-backend
     build:
-      context: dev_environment/backend
+      context: backend
       args:
         BACKEND_PORT: ${BACKEND_PORT}
         POSTGRES_USER: ${POSTGRES_USER}
@@ -54,7 +54,7 @@ services:
   frontend:
     image: naucto-dev-frontend
     build:
-      context: dev_environment/frontend
+      context: frontend
       args:
         # Le frontend parle directement au backend via le réseau Docker
         BACKEND_URL: http://backend:${BACKEND_PORT}
